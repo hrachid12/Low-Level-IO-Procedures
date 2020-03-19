@@ -342,12 +342,12 @@ strToNum ENDP
 
 WriteVal PROC
 	push	ebp
-	mov						ebp, esp
+	mov					ebp, esp
 	pushad
 
-	mov						esi, [ebp+28]		; Point to listNums
-	mov						ecx, 10				; Set loop counter to number of integers
-	mov						ebx, 10				; For divison
+	mov					esi, [ebp+28]		; Point to listNums
+	mov					ecx, 10				; Set loop counter to number of integers
+	mov					ebx, 10				; For divison
 
 	call	Crlf
 	displayString [ebp+8]
@@ -355,42 +355,42 @@ WriteVal PROC
 
 nextNum:
 
-	mov						eax, [esi]			; Move an integer to eax
+	mov					eax, [esi]			; Move an integer to eax
 	
-	cmp						eax, 0
+	cmp					eax, 0
 	jge		notNeg
 	neg		eax
-	mov						negative, 1
+	mov					negative, 1
 
 notNeg:
-	mov						edi, [ebp+32]		; Point to currentNum
+	mov					edi, [ebp+32]		; Point to currentNum
 	push	edx									; Save edx
 
-	cmp						negative, 1			; Subtract instead of add if integer is negative
+	cmp					negative, 1			; Subtract instead of add if integer is negative
 	je		subt								
-	mov						edx, [ebp+24]		; Add the number to sum
-	add						edx, eax
-	mov						[[ebp+24]], edx		; Save the updated sum
+	mov					edx, [ebp+24]		; Add the number to sum
+	add					edx, eax
+	mov					[[ebp+24]], edx		; Save the updated sum
 	pop		edx									; Restore edx
 	jmp		nextChar							; Skip subtraction
 
 subt:
-	mov						edx, [ebp+24]		; Add the number to sum
-	sub						edx, eax
-	mov						[ebp+24], edx		; Store updated sum
+	mov					edx, [ebp+24]		; Add the number to sum
+	sub					edx, eax
+	mov					[ebp+24], edx		; Store updated sum
 	pop		edx
 
 nextChar:
 	cdq	
 	idiv	ebx									; Divide value in eax by 10
-	add						edx, 48				; Add 48 to remainder to convert int to character
+	add					edx, 48				; Add 48 to remainder to convert int to character
 
 	push	eax									; Save eax
-	mov						eax, edx			; Move character to eax
+	mov					eax, edx			; Move character to eax
 	stosb										; Store it in currentNum 
 	pop		eax									; Restore eax to quotient
 	
-	cmp						eax, 0				; If quotient is not zero, jump back to top
+	cmp					eax, 0				; If quotient is not zero, jump back to top
 	jne		nextChar
 
 		
@@ -402,23 +402,23 @@ nextChar:
 
 	displayString [ebp+32]
 
-	cmp						ecx, 1				; If this is the last integer, don't display comma
+	cmp					ecx, 1				; If this is the last integer, don't display comma
 	je		noComma
 	displayString [ebp+36]
 
 noComma:
-	add						esi, 4				; Point to next integer
-	mov						negative, 0
+	add					esi, 4				; Point to next integer
+	mov					negative, 0
 
 	loop	nextNum								; Start process again
 
 
 
-	mov						eax, [ebp+24]		; Calcuate the average
+	mov					eax, [ebp+24]		; Calcuate the average
 	cdq
-	mov						ebx, 10
+	mov					ebx, 10
 	idiv	ebx
-	mov						[ebp+20], eax
+	mov					[ebp+20], eax
 
 	call	Crlf
 	displayString [ebp+12]						; display sumPrompt
@@ -453,35 +453,35 @@ WriteVal ENDP
 
 revString PROC
 	push	ebp
-	mov						ebp, esp
+	mov					ebp, esp
 	pushad
 
-	mov						esi, [ebp+8]		; Point to the string being reversed
-	mov						ecx, 0				; Initialize character counter to 0
+	mov					esi, [ebp+8]		; Point to the string being reversed
+	mov					ecx, 0				; Initialize character counter to 0
 
 
 pushToStack:
-	mov						eax, [esi]			; Move a character to eax
+	mov					eax, [esi]			; Move a character to eax
 	push	eax									; Push to the stack
 	inc		ecx									; Increase character count by 1
 	inc		esi									; Point to next character
-	cmp						al, 45				; If character is + or -, then stop pushing to the stack
+	cmp					al, 45				; If character is + or -, then stop pushing to the stack
 	je		endPush
-	cmp						al, 43
+	cmp					al, 43
 	je		endPush
 	jmp		pushToStack
 	
 endPush:
-	mov						esi, [ebp+8]		; Reset esi
+	mov					esi, [ebp+8]		; Reset esi
 
 rev:
 	pop		eax									; Pop a character off the stack
-	mov						[esi], al			; Overwrite esi
+	mov					[esi], al			; Overwrite esi
 	inc		esi
 	loop	rev
 
-	mov						al, 0				; Add null to end of string
-	mov						[esi], al
+	mov					al, 0				; Add null to end of string
+	mov					[esi], al
 
 
 	popad
@@ -501,19 +501,19 @@ revString ENDP
 addSign PROC
 
 	push	ebp
-	mov						ebp, esp
+	mov					ebp, esp
 	pushad
 
-	mov						edi, [ebp+8]		; Point to the string
+	mov					edi, [ebp+8]		; Point to the string
 
-	cmp						negative, 1			; Add + or - based on positive or negative
+	cmp					negative, 1			; Add + or - based on positive or negative
 	jne		addPosSign
-	mov						eax, 45
+	mov					eax, 45
 	stosb
 	jmp		endProc
 
 addPosSign:
-	mov						eax, 43
+	mov					eax, 43
 	stosb
 
 endProc:
@@ -536,30 +536,30 @@ addSign ENDP
 
 numToStr PROC
 	push	ebp
-	mov						ebp, esp
+	mov					ebp, esp
 	pushad
 
-	mov						eax, [ebp+8]		; Point to value being converted
-	mov						edi, [ebp+12]		; Point to currentNum
-	mov						ebx, 10
-	mov						negative, 0
+	mov					eax, [ebp+8]		; Point to value being converted
+	mov					edi, [ebp+12]		; Point to currentNum
+	mov					ebx, 10
+	mov					negative, 0
 
-	cmp						eax, 0				; Check if number is positive or negative
+	cmp					eax, 0				; Check if number is positive or negative
 	jge		next								; Skips negate if positive
 	neg		eax									; Negate if negative
-	mov						negative, 1
+	mov					negative, 1
 
 next:
 	cdq	
 	idiv	ebx									; Divide value in eax by 10
-	add						edx, 48				; Add 48 to remainder to convert int to character
+	add					edx, 48				; Add 48 to remainder to convert int to character
 
 	push	eax									; Save eax
-	mov						eax, edx			; Move character to eax
+	mov					eax, edx			; Move character to eax
 	stosb										; Store it in currentNum 
 	pop		eax
 	
-	cmp						eax, 0
+	cmp					eax, 0
 	jne		next
 
 
@@ -589,7 +589,7 @@ numToStr ENDP
 
 farewell PROC
 	push	ebp
-	mov						ebp, esp
+	mov					ebp, esp
 	pushad
 
 	displayString [ebp+8]
