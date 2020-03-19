@@ -137,18 +137,18 @@ main ENDP
 ; ------------------------------------------------------------------------------------------------------------
 
 Introduction PROC
-	push	ebp									; Save the used registers
+	push	ebp								; Save the used registers
 	mov					ebp, esp				
 	
 
-	displayString [ebp+16]						; Display program name and creator's name
+	displayString [ebp+16]					; Display program name and creator's name
 	call	Crlf
-	displayString [ebp+12]						; Displays the first set of instructions
+	displayString [ebp+12]					; Displays the first set of instructions
 	call	Crlf
-	displayString [ebp+8]						; Displays second set of instructions
+	displayString [ebp+8]					; Displays second set of instructions
 	call	Crlf
 	call	Crlf
-												; Restore registers
+											; Restore registers
 	pop		ebp
 	ret		12
 
@@ -170,46 +170,46 @@ Introduction ENDP
 
 readVal PROC
 	
-	push	ebp										; Save the used registers
+	push	ebp								; Save the used registers
 	mov					ebp, esp
 	push	edi
 	push	ecx
 	push	eax
 
-	mov					edi, [ebp+24]				; Move empty list to edi
+	mov					edi, [ebp+24]		; Move empty list to edi
 	mov					ecx, 10
 
 nextVal:
 	mov					positive, 1
-	getString [ebp+8], [ebp+12], [ebp+16]			; Call macro by passing numPrompt, numInput, and charCount as arguments
+	getString [ebp+8], [ebp+12], [ebp+16]	; Call macro by passing numPrompt, numInput, and charCount as arguments
 
 
 	push	[ebp+20]
 	push	[ebp+12]
 	push	[ebp+16]
-	call	validateStr								; Validate users input
+	call	validateStr						; Validate users input
 
-	cmp					positive, 0					; If invalid, get new input
+	cmp					positive, 0			; If invalid, get new input
 	je		nextVal
 
 
 	push	[ebp+16]
 	push	[ebp+12]
-	call	strToNum								; Convert string to num
+	call	strToNum						; Convert string to num
 
 	mov					[edi], ebx		
 
-	cmp					positive, 0					; If num is not negative, skip negate process
+	cmp					positive, 0			; If num is not negative, skip negate process
 	jne		skipNeg	
-	mov					eax, [edi]					; Negate the newest value in edi
+	mov					eax, [edi]			; Negate the newest value in edi
 	neg		eax			
 	mov					[edi], eax
 
 skipNeg:
-	add		edi, 4									; Point to next space in edi
+	add		edi, 4							; Point to next space in edi
 	loop	nextVal
 
-	pop		eax										; Restore registers
+	pop		eax								; Restore registers
 	pop		ecx
 	pop		edi
 	pop		ebp
@@ -228,7 +228,7 @@ readVal ENDP
 ; ------------------------------------------------------------------------------------------------------------
 
 validateStr PROC
-	push	ebp									; Save registers that are used
+	push	ebp								; Save registers that are used
 	mov					ebp, esp
 	push	esi
 	push	ecx
@@ -236,28 +236,28 @@ validateStr PROC
 	push	edx
 
 	mov					eax, 0
-	mov					esi, [ebp+12]			; Move numInput from stack to esi
-	mov					ecx, [ebp+8]			; Move charCount from stack to loop counter
-	mov					edx, 0					; Tracks which position is being checked
+	mov					esi, [ebp+12]		; Move numInput from stack to esi
+	mov					ecx, [ebp+8]		; Move charCount from stack to loop counter
+	mov					edx, 0				; Tracks which position is being checked
 	cld
 
-validate:										; Validate that each character is a +, -, or digit
+validate:									; Validate that each character is a +, -, or digit
 	lodsb
 	cmp					edx, 0
-	jne		notFirstPos							; Only check for + or - when looking at first position
+	jne		notFirstPos						; Only check for + or - when looking at first position
 	cmp					al, 43
 	je		valid
 	cmp					al, 45
 	je		valid
 
-notFirstPos:									; Ensure each character is within range
+notFirstPos:								; Ensure each character is within range
 	cmp					al, 48
 	jl		notValid
 	cmp					al, 57
 	jg		notValid
 	jmp		valid
 
-notValid:										; Otherwise, give an error message and try again
+notValid:									; Otherwise, give an error message and try again
 	displayString [ebp+16]
 	call	Crlf
 	mov					positive, 0
@@ -268,7 +268,7 @@ valid:
 	loop	validate
 
 endValidate:
-	pop		edx									; Restore registers
+	pop		edx								; Restore registers
 	pop		eax
 	pop		ecx
 	pop		esi
@@ -288,41 +288,41 @@ validateStr ENDP
 
 strToNum PROC
 
-	push	ebp									; Save used registers
+	push	ebp								; Save used registers
 	mov					ebp, esp
 	
 	push	esi
 	push	ecx
 	push	eax
 
-	mov					esi, [ebp+8]			; Point to numInput
+	mov					esi, [ebp+8]		; Point to numInput
 	mov					ebx, 0					
-	mov					ecx, [ebp+12]			; Set loop counter to length of input (charCount)
+	mov					ecx, [ebp+12]		; Set loop counter to length of input (charCount)
 	mov					inRange, 1
 	cld 
 	
 start:
-	lodsb										; Move first char into al
-	cmp					al, 45					; Check if first char is + or -
+	lodsb									; Move first char into al
+	cmp					al, 45				; Check if first char is + or -
 	jne		pos
 
 	mov					positive, 0
 
 pos:
-	cmp					al, 48					; Ensure char is within range
+	cmp					al, 48				; Ensure char is within range
 	jl		oor
 	cmp					al, 57
 	jg		oor
 
 
-	imul	ebx, 10								; Convert char to numerical value
+	imul	ebx, 10							; Convert char to numerical value
 	sub		al, 48
 	add		bl, al
 	
 oor:
 	loop	start
 
-	pop		eax									; Restore registers
+	pop		eax								; Restore registers
 	pop		ecx
 	pop		esi
 	pop		ebp
@@ -364,15 +364,15 @@ nextNum:
 
 notNeg:
 	mov					edi, [ebp+32]		; Point to currentNum
-	push	edx									; Save edx
+	push	edx								; Save edx
 
 	cmp					negative, 1			; Subtract instead of add if integer is negative
 	je		subt								
 	mov					edx, [ebp+24]		; Add the number to sum
 	add					edx, eax
 	mov					[[ebp+24]], edx		; Save the updated sum
-	pop		edx									; Restore edx
-	jmp		nextChar							; Skip subtraction
+	pop		edx								; Restore edx
+	jmp		nextChar						; Skip subtraction
 
 subt:
 	mov					edx, [ebp+24]		; Add the number to sum
@@ -382,22 +382,22 @@ subt:
 
 nextChar:
 	cdq	
-	idiv	ebx									; Divide value in eax by 10
+	idiv	ebx								; Divide value in eax by 10
 	add					edx, 48				; Add 48 to remainder to convert int to character
 
-	push	eax									; Save eax
+	push	eax								; Save eax
 	mov					eax, edx			; Move character to eax
-	stosb										; Store it in currentNum 
-	pop		eax									; Restore eax to quotient
+	stosb									; Store it in currentNum 
+	pop		eax								; Restore eax to quotient
 	
 	cmp					eax, 0				; If quotient is not zero, jump back to top
 	jne		nextChar
 
 		
-	push	edi									; Push edi and add the correct sign to currentNum
+	push	edi								; Push edi and add the correct sign to currentNum
 	call	addSign
 
-	push	[ebp+32]							; Reverse the string
+	push	[ebp+32]						; Reverse the string
 	call	revString
 
 	displayString [ebp+32]
@@ -410,7 +410,7 @@ noComma:
 	add					esi, 4				; Point to next integer
 	mov					negative, 0
 
-	loop	nextNum								; Start process again
+	loop	nextNum							; Start process again
 
 
 
@@ -421,22 +421,22 @@ noComma:
 	mov					[ebp+20], eax
 
 	call	Crlf
-	displayString [ebp+12]						; display sumPrompt
+	displayString [ebp+12]					; display sumPrompt
 
 	push	[ebp+32]
 	push	[ebp+24]
-	call	numToStr							; Convert sum to string and display
+	call	numToStr						; Convert sum to string and display
 	call	Crlf
 
 
-	displayString [ebp+16]						; display avgPrompt
+	displayString [ebp+16]					; display avgPrompt
 
 	push	[ebp+32]
 	push	[ebp+20]
-	call	numToStr							; Convert avg to string and display
+	call	numToStr						; Convert avg to string and display
 
 
-	popad										; restore registers
+	popad									; restore registers
 	pop		ebx
 	ret		32
 WriteVal ENDP
@@ -462,9 +462,9 @@ revString PROC
 
 pushToStack:
 	mov					eax, [esi]			; Move a character to eax
-	push	eax									; Push to the stack
-	inc		ecx									; Increase character count by 1
-	inc		esi									; Point to next character
+	push	eax								; Push to the stack
+	inc		ecx								; Increase character count by 1
+	inc		esi								; Point to next character
 	cmp					al, 45				; If character is + or -, then stop pushing to the stack
 	je		endPush
 	cmp					al, 43
@@ -475,7 +475,7 @@ endPush:
 	mov					esi, [ebp+8]		; Reset esi
 
 rev:
-	pop		eax									; Pop a character off the stack
+	pop		eax								; Pop a character off the stack
 	mov					[esi], al			; Overwrite esi
 	inc		esi
 	loop	rev
@@ -545,31 +545,31 @@ numToStr PROC
 	mov					negative, 0
 
 	cmp					eax, 0				; Check if number is positive or negative
-	jge		next								; Skips negate if positive
-	neg		eax									; Negate if negative
+	jge		next							; Skips negate if positive
+	neg		eax								; Negate if negative
 	mov					negative, 1
 
 next:
 	cdq	
-	idiv	ebx									; Divide value in eax by 10
+	idiv	ebx								; Divide value in eax by 10
 	add					edx, 48				; Add 48 to remainder to convert int to character
 
-	push	eax									; Save eax
+	push	eax								; Save eax
 	mov					eax, edx			; Move character to eax
-	stosb										; Store it in currentNum 
+	stosb									; Store it in currentNum 
 	pop		eax
 	
 	cmp					eax, 0
 	jne		next
 
 
-	push	edi									; Add the correct sign to the number
+	push	edi								; Add the correct sign to the number
 	call	addSign
 
-	push	[ebp+12]							; Reverse the string
+	push	[ebp+12]						; Reverse the string
 	call	revString
 
-	displayString [ebp+12]						; Display the number
+	displayString [ebp+12]					; Display the number
 
 
 	popad
