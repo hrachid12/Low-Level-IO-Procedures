@@ -9,3 +9,6 @@ The integers are read as a string, which is then converted to a numerical value 
 
 Download and open the Project 6.asm file using Microsoft Visual Studio. Then, run the application by selecting Debug -> Start Without Debugging.
 
+Example of how the program works:
+![Image of Example Output]
+(https://imgur.com/hvkTjWY)
